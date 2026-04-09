@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "diffie",
-      "source": ".",
+      "source": "./",
       "description": "Diffie QA — AI-powered E2E testing with PR integration"
     }
   ]
