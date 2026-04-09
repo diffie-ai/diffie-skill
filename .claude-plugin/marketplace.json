@@ -1,0 +1,13 @@
+{
+  "name": "diffie",
+  "owner": {
+    "name": "Diffie"
+  },
+  "plugins": [
+    {
+      "name": "diffie",
+      "source": ".",
+      "description": "Diffie QA — AI-powered E2E testing with PR integration"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+name: Diffie QA
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  diffie-qa:
+    if: |
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '/diffie test')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Get PR branch
+        id: pr
+        run: |
+          PR_DATA=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.issue.number }})
+          echo "ref=$(echo $PR_DATA | jq -r .head.ref)" >> $GITHUB_OUTPUT
+          echo "number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.ref }}
+          fetch-depth: 0
+
+      - name: Extract URL from comment
+        id: comment
+        run: |
+          COMMENT="${{ github.event.comment.body }}"
+          URL=$(echo "$COMMENT" | grep -oP '/diffie test \K(https?://\S+)' || echo "")
+          echo "url=$URL" >> $GITHUB_OUTPUT
+
+      # TODO: Add your preview deployment step here if you have one.
+      # Examples:
+      #   Vercel:  patrickedqvist/wait-for-vercel-preview@v1.3.2
+      #   Netlify: jakepartusch/wait-for-netlify-action@v1
+      # The step should output the preview URL so the next step can pick it up.
+
+      - name: Set preview URL
+        id: preview
+        run: |
+          if [ -n "${{ steps.comment.outputs.url }}" ]; then
+            echo "url=${{ steps.comment.outputs.url }}" >> $GITHUB_OUTPUT
+          elif [ -n "__PREVIEW_URL_VARIABLE__" ]; then
+            echo "url=__PREVIEW_URL_VARIABLE__" >> $GITHUB_OUTPUT
+          else
+            echo "url=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Diffie credentials
+        run: |
+          mkdir -p ~/.diffie
+          echo '{"apiToken":"${{ secrets.DIFFIE_API_TOKEN }}","apiUrl":"https://api.diffie.ai"}' > ~/.diffie/credentials.json
+
+      - name: Run Diffie QA
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            You are in PR testing mode (CI=true). Use the diffie-qa skill.
+
+            PR number: ${{ steps.pr.outputs.number }}
+            Preview URL: ${{ steps.preview.outputs.url }}
+            Repo: ${{ github.repository }}
+
+            Follow the "PR Testing Mode (Autonomous)" workflow in the skill.
+            Analyze the PR diff, create a test for the core user-facing change,
+            run it against the preview URL, and post the result as a PR comment.
