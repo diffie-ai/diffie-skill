@@ -100,5 +100,4 @@ After setup, `/diffie test` works on every PR.
 ## Links
 
 - [Diffie](https://diffie.ai) — AI-powered E2E testing platform
-- [Documentation](https://diffie.ai/docs)
 - [Claude Code](https://claude.ai/code)
