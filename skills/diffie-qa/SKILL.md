@@ -481,6 +481,18 @@ When in PR mode, **never ask for user input**. Act autonomously.
 
 ### PR Mode Workflow
 
+#### Step 0: Authenticate gh as the Diffie Bot
+
+Before any `gh` command, authenticate the CLI as the Diffie QA GitHub App so PR comments post under the Diffie identity instead of the default `claude[bot]`. The workflow writes the installation token to `~/.diffie-gh-token`. Log in with it and unset any inherited `GITHUB_TOKEN`/`GH_TOKEN` so they don't override the auth:
+
+```bash
+unset GITHUB_TOKEN GH_TOKEN
+gh auth login --with-token < "$HOME/.diffie-gh-token"
+gh auth status  # confirm it shows the Diffie QA app
+```
+
+Run this once at the start of every PR mode invocation. All subsequent `gh` calls inherit this auth.
+
 #### Step 1: Read Context
 
 ```bash

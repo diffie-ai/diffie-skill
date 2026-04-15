@@ -64,6 +64,11 @@ jobs:
           mkdir -p ~/.diffie
           echo '{"apiToken":"${{ secrets.DIFFIE_API_TOKEN }}","apiUrl":"https://api.diffie.ai"}' > ~/.diffie/credentials.json
 
+      - name: Export Diffie bot token for gh CLI
+        run: |
+          echo "${{ steps.diffie-bot.outputs.token }}" > $HOME/.diffie-gh-token
+          chmod 600 $HOME/.diffie-gh-token
+
       - name: Run Diffie QA
         uses: anthropics/claude-code-action@v1
         with:
