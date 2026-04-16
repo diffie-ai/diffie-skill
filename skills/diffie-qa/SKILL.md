@@ -645,7 +645,7 @@ BODY="$(cat <<'EOF'
 
 **Test:** <test name>
 **Status:** ✅ Passed (<duration>s)
-**Recording:** [Watch test run](https://app.diffie.ai/runs/$RUN_ID)
+**Recording:** [Watch test run](https://app.diffie.ai/public/runs/$RUN_ID)
 
 > Tested against `<preview URL>` — [Diffie](https://diffie.ai)
 EOF
@@ -667,7 +667,7 @@ BODY="$(cat <<'EOF'
 **Test:** <test name>
 **Status:** ❌ Failed (<duration>s)
 **Error:** <error message from run>
-**Recording:** [Watch test run](https://app.diffie.ai/runs/$RUN_ID)
+**Recording:** [Watch test run](https://app.diffie.ai/public/runs/$RUN_ID)
 
 > Tested against `<preview URL>` — [Diffie](https://diffie.ai)
 EOF
@@ -745,8 +745,10 @@ Tell the user to add these secrets to their GitHub repo (Settings → Secrets an
 
 | Secret | Value | Where to get it |
 |--------|-------|-----------------|
-| `ANTHROPIC_API_KEY` | Anthropic API key | https://console.anthropic.com |
+| `ANTHROPIC_API_KEY` *(or `CLAUDE_CODE_OAUTH_TOKEN`)* | Anthropic API key, **or** a Claude Max/Pro OAuth token (set exactly one) | API key: https://console.anthropic.com. OAuth token: run `claude setup-token` locally (requires Claude Max/Pro). |
 | `DIFFIE_API_TOKEN` | Diffie API token | `cat ~/.diffie/credentials.json` or https://app.diffie.ai/settings/api-tokens |
+
+Ask the user which Claude plan they're on so you recommend the right secret: API key (Anthropic Console billing) or `CLAUDE_CODE_OAUTH_TOKEN` (Claude Max/Pro subscription).
 
 Also instruct the user to install the **Diffie QA Bot** GitHub App on their repo (https://github.com/apps/diffie-qa-bot) so PR comments post under the Diffie identity. The workflow exchanges a GitHub Actions OIDC token at `https://api.diffie.ai/gh/token` for a short-lived installation token — no app credentials live in the user's repo.
 

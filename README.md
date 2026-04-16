@@ -49,7 +49,7 @@ On first use, the skill opens a browser window for OAuth sign-in. Credentials ar
 The skill will:
 - Generate a `.github/workflows/diffie-qa.yml` workflow file
 - Ask for your preview deployment URL variable (e.g., `${{ steps.vercel.outputs.url }}`)
-- Guide you through adding `ANTHROPIC_API_KEY` and `DIFFIE_API_TOKEN` as GitHub repo secrets
+- Guide you through adding `ANTHROPIC_API_KEY` (or `CLAUDE_CODE_OAUTH_TOKEN` for Claude Max/Pro) and `DIFFIE_API_TOKEN` as GitHub repo secrets
 
 After setup, `/diffie test` works on every PR.
 
@@ -71,7 +71,9 @@ After setup, `/diffie test` works on every PR.
 
 ## PR Testing Requirements
 
-- `ANTHROPIC_API_KEY` — [Anthropic Console](https://console.anthropic.com)
+- Claude auth — set **one** of:
+  - `ANTHROPIC_API_KEY` — [Anthropic Console](https://console.anthropic.com) (pay-as-you-go API billing)
+  - `CLAUDE_CODE_OAUTH_TOKEN` — Claude Max/Pro subscribers can generate one by running `claude setup-token` locally
 - `DIFFIE_API_TOKEN` — [Diffie Settings](https://app.diffie.ai/settings/api-tokens) or from `~/.diffie/credentials.json`
 - Preview deployments (Vercel, Netlify, etc.) or a staging URL
 

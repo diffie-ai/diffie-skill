@@ -85,10 +85,32 @@ jobs:
           echo "${{ steps.diffie-bot.outputs.token }}" > $HOME/.diffie-gh-token
           chmod 600 $HOME/.diffie-gh-token
 
-      - name: Run Diffie QA
+      # Use ANTHROPIC_API_KEY (Anthropic Console billing) OR
+      # CLAUDE_CODE_OAUTH_TOKEN (Claude Max/Pro subscription — run `claude setup-token` locally).
+      # Set exactly one of these as a repo secret.
+
+      - name: Run Diffie QA (Anthropic API key)
+        if: ${{ secrets.ANTHROPIC_API_KEY != '' }}
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ steps.diffie-bot.outputs.token }}
+          prompt: |
+            You are in PR testing mode (CI=true). Use the diffie-qa skill.
+
+            PR number: ${{ steps.pr.outputs.number }}
+            Preview URL: ${{ steps.preview.outputs.url }}
+            Repo: ${{ github.repository }}
+
+            Follow the "PR Testing Mode (Autonomous)" workflow in the skill.
+            Analyze the PR diff, create a test for the core user-facing change,
+            run it against the preview URL, and post the result as a PR comment.
+
+      - name: Run Diffie QA (Claude Max/Pro OAuth)
+        if: ${{ secrets.ANTHROPIC_API_KEY == '' && secrets.CLAUDE_CODE_OAUTH_TOKEN != '' }}
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           github_token: ${{ steps.diffie-bot.outputs.token }}
           prompt: |
             You are in PR testing mode (CI=true). Use the diffie-qa skill.
