@@ -13,13 +13,29 @@ jobs:
       contents: read
       pull-requests: write
       issues: write
+      id-token: write
     steps:
-      - name: Generate Diffie bot token
-        id: diffie-bot
-        uses: actions/create-github-app-token@v1
+      - name: Mint Diffie OIDC token
+        id: oidc
+        uses: actions/github-script@v7
         with:
-          app-id: ${{ secrets.DIFFIE_APP_ID }}
-          private-key: ${{ secrets.DIFFIE_APP_PRIVATE_KEY }}
+          script: |
+            const token = await core.getIDToken('diffie.ai')
+            core.setSecret(token)
+            core.setOutput('token', token)
+
+      - name: Exchange OIDC for Diffie bot token
+        id: diffie-bot
+        run: |
+          RESPONSE=$(curl -sS -X POST https://api.diffie.ai/gh/token \
+            -H "Authorization: Bearer ${{ steps.oidc.outputs.token }}")
+          TOKEN=$(echo "$RESPONSE" | jq -r '.token // empty')
+          if [ -z "$TOKEN" ]; then
+            echo "Failed to mint Diffie bot token: $RESPONSE"
+            exit 1
+          fi
+          echo "::add-mask::$TOKEN"
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
 
       - name: Get PR branch
         id: pr

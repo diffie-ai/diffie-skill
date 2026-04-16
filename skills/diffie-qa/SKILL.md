@@ -747,10 +747,8 @@ Tell the user to add these secrets to their GitHub repo (Settings → Secrets an
 |--------|-------|-----------------|
 | `ANTHROPIC_API_KEY` | Anthropic API key | https://console.anthropic.com |
 | `DIFFIE_API_TOKEN` | Diffie API token | `cat ~/.diffie/credentials.json` or https://app.diffie.ai/settings/api-tokens |
-| `DIFFIE_APP_ID` | Diffie QA GitHub App ID | `3384187` (shared across all installs) |
-| `DIFFIE_APP_PRIVATE_KEY` | Diffie QA GitHub App private key | Provided by the Diffie team — full `.pem` file contents including BEGIN/END lines |
 
-Also instruct the user to install the **Diffie QA** GitHub App on their repo (https://github.com/apps/diffie-qa) so PR comments post under the Diffie identity instead of the generic `claude` bot.
+Also instruct the user to install the **Diffie QA Bot** GitHub App on their repo (https://github.com/apps/diffie-qa-bot) so PR comments post under the Diffie identity. The workflow exchanges a GitHub Actions OIDC token at `https://api.diffie.ai/gh/token` for a short-lived installation token — no app credentials live in the user's repo.
 
 ### Step 5: Confirm Setup
 
